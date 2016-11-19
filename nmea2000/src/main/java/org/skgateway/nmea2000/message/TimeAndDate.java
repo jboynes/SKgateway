@@ -1,0 +1,59 @@
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+package org.skgateway.nmea2000.message;
+
+import java.nio.ByteBuffer;
+import java.time.Instant;
+import java.time.ZoneOffset;
+
+import org.skgateway.nmea2000.Message;
+import org.skgateway.nmea2000.MessageUtil;
+
+/**
+ *
+ */
+public class TimeAndDate extends Message {
+    private final Instant instant;
+    private final ZoneOffset localOffset;
+
+    public TimeAndDate(int source, int destination, int priority, ByteBuffer data) {
+        super(source, destination, priority);
+        instant = MessageUtil.dateTime(data);
+        localOffset = ZoneOffset.ofTotalSeconds(data.getShort() * 60);
+    }
+
+    public TimeAndDate(int source, int destination, int priority, Instant instant, ZoneOffset localOffset) {
+        super(source, destination, priority);
+        this.instant = instant;
+        this.localOffset = localOffset;
+    }
+
+    @Override
+    public int pgn() {
+        return 129033;
+    }
+
+    public Instant instant() {
+        return instant;
+    }
+
+    public ZoneOffset localOffset() {
+        return localOffset;
+    }
+
+    @Override
+    public String toString() {
+        return "TimeAndDate(" + instant + ", " + localOffset + ")";
+    }
+}

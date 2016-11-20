@@ -79,7 +79,6 @@ import java.util.Set;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import org.skgateway.gateways.actisense.ActisenseNGT1USB;
 import org.skgateway.nmea2000.message.UnknownPGN;
 
 /**
@@ -90,23 +89,23 @@ public class DataTest {
 
     @Test
     public void dumpRawData() throws IOException {
-        ActisenseNGT1USB.MessageParser parser = new ActisenseNGT1USB.MessageParser(System.out::println, true);
+        MessageParser parser = new MessageParser(System.out::println, true);
         try (SeekableByteChannel channel = Files.newByteChannel(Paths.get("init2.asc"))) {
-            new ActisenseNGT1USB.SerialParser(channel, parser).run();
+            new SerialParser(channel, parser).run();
         }
     }
 
     @Test
     public void dumpUnknownPGNs() throws IOException {
         Set<Integer> pgns = new HashSet<>();
-        ActisenseNGT1USB.MessageParser parser = new ActisenseNGT1USB.MessageParser(message -> {
+        MessageParser parser = new MessageParser(message -> {
             if (message instanceof UnknownPGN && !pgns.contains(message.pgn())) {
                 pgns.add(message.pgn());
                 System.out.println(message.pgn());
             }
         }, false);
         try (SeekableByteChannel channel = Files.newByteChannel(Paths.get("withAIS.asc"))) {
-            new ActisenseNGT1USB.SerialParser(channel, parser).run();
+            new SerialParser(channel, parser).run();
         }
     }
 }

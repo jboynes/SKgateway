@@ -92,7 +92,7 @@ public class ActisenseNGT1USBTest {
     public void canParseSimpleMessage() {
         byte[] bytes = {0x10, 0x02, 0x00, 0x01, 0x10, 0x10, 0x03, 0x10, 0x03};
         ReadableByteChannel source = Channels.newChannel(new ByteArrayInputStream(bytes));
-        ActisenseNGT1USB.SerialParser parser = new ActisenseNGT1USB.SerialParser(source,
+        SerialParser parser = new SerialParser(source,
                 buffer -> assertThat(buffer, equalTo(ByteBuffer.wrap(new byte[]{0x00, 0x01, 0x10, 0x03}))));
         parser.run();
     }
@@ -110,7 +110,7 @@ public class ActisenseNGT1USBTest {
                 .put((byte) 0x09).put((byte)0xF0).putShort((short)0x3af1).putInt(0x0dcb3060);
         buffer.flip();
         final AtomicReference<SystemTime> ref = new AtomicReference<>();
-        ActisenseNGT1USB.MessageParser parser = new ActisenseNGT1USB.MessageParser(message -> {
+        MessageParser parser = new MessageParser(message -> {
             assertThat(message, instanceOf(SystemTime.class));
             ref.set((SystemTime) message);
 

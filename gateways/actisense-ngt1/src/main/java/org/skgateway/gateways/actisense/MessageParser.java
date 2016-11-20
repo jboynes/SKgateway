@@ -23,7 +23,7 @@ import org.skgateway.nmea2000.MessageUtil;
 /**
  * Converts raw messages from the Actisense stream to NMEA2000 messages.
  */
-class MessageParser implements Consumer<ByteBuffer> {
+public class MessageParser implements Consumer<ByteBuffer> {
     private static final byte N2K_MESSAGE = (byte) 0x93;
     private static final byte NGT_MESSAGE = (byte) 0xa0;
 
@@ -31,7 +31,7 @@ class MessageParser implements Consumer<ByteBuffer> {
     private final boolean delay;
     private int lastTimestamp;
 
-    MessageParser(Consumer<Message> sink, boolean delay) {
+    public MessageParser(Consumer<Message> sink, boolean delay) {
         this.sink = sink;
         this.delay = delay;
     }

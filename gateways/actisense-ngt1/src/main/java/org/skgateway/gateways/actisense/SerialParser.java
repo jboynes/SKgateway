@@ -22,7 +22,7 @@ import java.util.function.Consumer;
 /**
  *
  */
-class SerialParser extends Thread {
+public class SerialParser extends Thread {
     private static final byte STX = 0x02;
     private static final byte ETX = 0x03;
     private static final byte DLE = 0x10;

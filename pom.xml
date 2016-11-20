@@ -39,6 +39,7 @@
     <module>nmea2000</module>
     <module>gateways</module>
     <module>services</module>
+    <module>server</module>
   </modules>
 
   <build>

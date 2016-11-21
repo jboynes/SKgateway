@@ -40,6 +40,7 @@ public class TcpServer {
         serverSocket.accept(null, new CompletionHandler<AsynchronousSocketChannel, Object>(){
             @Override
             public void completed(AsynchronousSocketChannel result, Object attachment) {
+                serverSocket.accept(null, this);
                 try {
                     System.out.println("Connection from" + result.getRemoteAddress());
                 } catch (IOException e) {
@@ -75,6 +76,8 @@ public class TcpServer {
             try (JsonWriter writer = Json.createWriter(os)) {
                 writer.writeObject(json);
             }
+            os.write(13);
+            os.write(10);
             ByteBuffer buffer = ByteBuffer.wrap(os.toByteArray());
             channel.write(buffer, null, new CompletionHandler<Integer, Object>() {
                 @Override

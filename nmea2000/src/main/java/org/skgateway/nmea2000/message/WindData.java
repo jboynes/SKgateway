@@ -22,6 +22,7 @@ import javax.measure.quantity.Speed;
 
 import org.skgateway.nmea2000.Measurements;
 import org.skgateway.nmea2000.Message;
+import org.skgateway.nmea2000.PGN;
 
 /**
  *
@@ -31,10 +32,6 @@ public class WindData extends Message {
     private final Quantity<Speed> speed;
     private final Quantity<Angle> angle;
     private final Reference reference;
-
-    enum Reference {
-        TRUE, MAGNETIC, APPARENT, TRUE_TO_BOAT, TRUE_TO_WATER
-    }
 
     public WindData(int source, int destination, int priority, ByteBuffer data) {
         super(source, destination, priority);
@@ -73,7 +70,7 @@ public class WindData extends Message {
 
     @Override
     public int pgn() {
-        return 130306;
+        return PGN.WIND_DATA;
     }
 
     public int sid() {
@@ -95,6 +92,10 @@ public class WindData extends Message {
     @Override
     public String toString() {
         return "WindData(" + speed + ", " + angle + ", " + reference + ")";
+    }
+
+    enum Reference {
+        TRUE, MAGNETIC, APPARENT, TRUE_TO_BOAT, TRUE_TO_WATER
     }
 }
 

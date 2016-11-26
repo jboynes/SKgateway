@@ -17,6 +17,7 @@ import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 
 import org.skgateway.nmea2000.Message;
+import org.skgateway.nmea2000.PGN;
 import org.skgateway.nmea2000.Position;
 
 /**
@@ -39,7 +40,7 @@ public class PositionRapidUpdate extends Message {
 
     @Override
     public int pgn() {
-        return 129025;
+        return PGN.POSITION_RAPID_UPDATE;
     }
 
     public Position position() {

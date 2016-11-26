@@ -19,6 +19,7 @@ import java.time.ZoneOffset;
 
 import org.skgateway.nmea2000.Message;
 import org.skgateway.nmea2000.MessageUtil;
+import org.skgateway.nmea2000.PGN;
 
 /**
  *
@@ -41,7 +42,7 @@ public class TimeAndDate extends Message {
 
     @Override
     public int pgn() {
-        return 129033;
+        return PGN.TIME_AND_DATE;
     }
 
     public Instant instant() {

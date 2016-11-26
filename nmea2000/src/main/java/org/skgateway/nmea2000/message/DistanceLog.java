@@ -22,6 +22,7 @@ import javax.measure.quantity.Length;
 import org.skgateway.nmea2000.Measurements;
 import org.skgateway.nmea2000.Message;
 import org.skgateway.nmea2000.MessageUtil;
+import org.skgateway.nmea2000.PGN;
 
 /**
  *
@@ -47,7 +48,7 @@ public class DistanceLog extends Message {
 
     @Override
     public int pgn() {
-        return 128275;
+        return PGN.DISTANCE_LOG;
     }
 
     public Instant measurementTime() {

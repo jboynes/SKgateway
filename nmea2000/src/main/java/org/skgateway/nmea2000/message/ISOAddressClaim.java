@@ -16,23 +16,12 @@ package org.skgateway.nmea2000.message;
 import java.nio.ByteBuffer;
 
 import org.skgateway.nmea2000.Message;
+import org.skgateway.nmea2000.PGN;
 
 /**
  *
  */
 public class ISOAddressClaim extends Message {
-    private enum DeviceClass {
-        RESERVED, SYSTEM_TOOLS, SAFETY_SYSTEM, INTERNETWORK_DEVICE,
-        ELECTRICAL_DISTRIBUTION, ELECTRICAL_GENERATION, STEERING_AND_CONTROL_SURFACES,
-        PROPULSION, NAVIGATION, COMMUNICATION, SENSOR_COMMUNICATION, INSTRUMENTATION,
-        EXTERNAL_ENVIRONMENT, INTERNAL_ENVIRONMENT, DECK_CARGO_FISHING,
-        DISPLAY, ENTERTAINMENT
-    }
-
-    private enum IndustryGroup {
-        GLOBAL, HIGHWAY, AGRICULTURE, CONSTRUCTION, MARINE, INDUSTRIAL
-    }
-
     private final int uniqueId;
     private final int manufacturerCode;
     private final int deviceInstance;
@@ -41,7 +30,6 @@ public class ISOAddressClaim extends Message {
     private final int deviceClassInstance;
     private final IndustryGroup industryGroup;
     private final boolean selfConfigurable;
-
     public ISOAddressClaim(int source, int destination, int priority, ByteBuffer data) {
         super(source, destination, priority);
         int val = data.getInt();
@@ -132,7 +120,6 @@ public class ISOAddressClaim extends Message {
         }
         selfConfigurable = (val & 0x80) != 0;
     }
-
     public ISOAddressClaim(int source, int destination, int priority, int uniqueId, int manufacturerCode, int deviceInstance, int deviceFunction, DeviceClass deviceClass, int deviceClassInstance, IndustryGroup industryGroup, boolean selfConfigurable) {
         super(source, destination, priority);
         this.uniqueId = uniqueId;
@@ -147,7 +134,7 @@ public class ISOAddressClaim extends Message {
 
     @Override
     public int pgn() {
-        return 60928;
+        return PGN.ISO_ADDRESS_CLAIM;
     }
 
     public int uniqueId() {
@@ -193,6 +180,18 @@ public class ISOAddressClaim extends Message {
                 + ", " + industryGroup
                 + ", " + selfConfigurable
                 + ")";
+    }
+
+    private enum DeviceClass {
+        RESERVED, SYSTEM_TOOLS, SAFETY_SYSTEM, INTERNETWORK_DEVICE,
+        ELECTRICAL_DISTRIBUTION, ELECTRICAL_GENERATION, STEERING_AND_CONTROL_SURFACES,
+        PROPULSION, NAVIGATION, COMMUNICATION, SENSOR_COMMUNICATION, INSTRUMENTATION,
+        EXTERNAL_ENVIRONMENT, INTERNAL_ENVIRONMENT, DECK_CARGO_FISHING,
+        DISPLAY, ENTERTAINMENT
+    }
+
+    private enum IndustryGroup {
+        GLOBAL, HIGHWAY, AGRICULTURE, CONSTRUCTION, MARINE, INDUSTRIAL
     }
 }
 

@@ -18,6 +18,7 @@ import java.time.Instant;
 
 import org.skgateway.nmea2000.Message;
 import org.skgateway.nmea2000.MessageUtil;
+import org.skgateway.nmea2000.PGN;
 
 /**
  *
@@ -26,10 +27,6 @@ public class SystemTime extends Message {
     private final int sid;
     private final TimeSource timeSource;
     private final Instant instant;
-
-    public enum TimeSource {
-        GPS, GLONASS, RADIO, LOCAL_CESIUM, LOCAL_RUBIDIUM, LOCAL_CRYSTAL
-    }
 
     public SystemTime(int source, int destination, int priority, ByteBuffer data) {
         super(source, destination, priority);
@@ -69,7 +66,7 @@ public class SystemTime extends Message {
 
     @Override
     public int pgn() {
-        return 126992;
+        return PGN.SYSTEM_TIME;
     }
 
     public int sid() {
@@ -87,5 +84,9 @@ public class SystemTime extends Message {
     @Override
     public String toString() {
         return "SystemTime(" + instant + ", " + timeSource + ")";
+    }
+
+    public enum TimeSource {
+        GPS, GLONASS, RADIO, LOCAL_CESIUM, LOCAL_RUBIDIUM, LOCAL_CRYSTAL
     }
 }

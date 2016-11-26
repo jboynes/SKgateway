@@ -20,17 +20,16 @@ import javax.measure.Quantity;
 
 import org.skgateway.nmea2000.Measurements;
 import org.skgateway.nmea2000.Message;
+import org.skgateway.nmea2000.PGN;
 
 /**
  *
  */
 public class Speed extends Message {
-    public enum Reference {PADDLE_WHEEL, PITOT_TUBE, DOPPLER, CORRELATION, ELECTRO_MAGNETIC}
     private final int sid;
     private final Quantity<javax.measure.quantity.Speed> waterReferenced;
     private final Quantity<javax.measure.quantity.Speed> groundReferenced;
     private final Reference reference;
-
     public Speed(int source, int destination, int priority, ByteBuffer data) {
         super(source, destination, priority);
         sid = Byte.toUnsignedInt(data.get());
@@ -70,7 +69,7 @@ public class Speed extends Message {
 
     @Override
     public int pgn() {
-        return 128259;
+        return PGN.SPEED;
     }
 
     public int sid() {
@@ -93,5 +92,7 @@ public class Speed extends Message {
     public String toString() {
         return "Speed(" + waterReferenced + ", " + groundReferenced + ", " + reference + ")";
     }
+
+    public enum Reference {PADDLE_WHEEL, PITOT_TUBE, DOPPLER, CORRELATION, ELECTRO_MAGNETIC}
 }
 

@@ -22,6 +22,7 @@ import javax.measure.quantity.Angle;
 import org.skgateway.nmea2000.HeadingReference;
 import org.skgateway.nmea2000.Measurements;
 import org.skgateway.nmea2000.Message;
+import org.skgateway.nmea2000.PGN;
 
 /**
  *
@@ -64,7 +65,7 @@ public class VesselHeading extends Message {
 
     @Override
     public int pgn() {
-        return 127250;
+        return PGN.VESSEL_HEADING;
     }
 
     public int sid() {
@@ -89,7 +90,7 @@ public class VesselHeading extends Message {
 
     @Override
     public String toString() {
-        return "VesselHeading(" + heading + " " + reference + ", " + deviation+ ", " + variation + ")";
+        return "VesselHeading(" + heading + " " + reference + ", " + deviation + ", " + variation + ")";
     }
 }
 

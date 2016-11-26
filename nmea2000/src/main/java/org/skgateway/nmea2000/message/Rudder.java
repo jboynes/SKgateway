@@ -21,6 +21,7 @@ import javax.measure.quantity.Angle;
 
 import org.skgateway.nmea2000.Measurements;
 import org.skgateway.nmea2000.Message;
+import org.skgateway.nmea2000.PGN;
 
 /**
  *
@@ -52,7 +53,7 @@ public class Rudder extends Message {
 
     @Override
     public int pgn() {
-        return 127245;
+        return PGN.RUDDER;
     }
 
     public int instance() {
@@ -73,7 +74,7 @@ public class Rudder extends Message {
 
     @Override
     public String toString() {
-        return "Rudder(" + instance + ", " + directionOrder + ", " + angleOrder+ ", " + position + ")";
+        return "Rudder(" + instance + ", " + directionOrder + ", " + angleOrder + ", " + position + ")";
     }
 }
 

@@ -23,29 +23,19 @@ import javax.measure.quantity.Temperature;
 
 import org.skgateway.nmea2000.Measurements;
 import org.skgateway.nmea2000.Message;
+import org.skgateway.nmea2000.PGN;
 
 /**
  *
  */
 public class EnvironmentalParameters extends Message {
-    enum TemperatureSource {
-        SEA, OUTSIDE, INSIDE, ENGINE_ROOM, MAIN_CABIN, LIVE_WELL, BAIT_WELL, REFRIGERATION, HEATING,
-        DEW_POINT, APPARENT_WIND_CHILL, THEORETICAL_WIND_CHILL, HEAT_INDEX, FREEZER, EXHAUST
-    }
-
-    enum HumiditySource {
-        INSIDE, OUTSIDE
-    }
-
     private static final BigDecimal HUMIDITY_SCALE = new BigDecimal("0.00004");
-
     private final int sid;
     private final TemperatureSource temperatureSource;
     private final HumiditySource humiditySource;
     private final Quantity<Temperature> temperature;
     private final Quantity<Dimensionless> humidity;
     private final Quantity<Pressure> pressure;
-
     public EnvironmentalParameters(int source, int destination, int priority, ByteBuffer data) {
         super(source, destination, priority);
         sid = Byte.toUnsignedInt(data.get());
@@ -117,7 +107,6 @@ public class EnvironmentalParameters extends Message {
         val = data.getShort();
         pressure = val == -1 ? null : Measurements.pressure(new BigDecimal(Short.toUnsignedInt(val)).movePointRight(2));
     }
-
     public EnvironmentalParameters(int source, int destination, int priority, int sid, TemperatureSource temperatureSource, HumiditySource humiditySource, Quantity<Temperature> temperature, Quantity<Dimensionless> humidity, Quantity<Pressure> pressure) {
         super(source, destination, priority);
         this.sid = sid;
@@ -130,7 +119,7 @@ public class EnvironmentalParameters extends Message {
 
     @Override
     public int pgn() {
-        return 130311;
+        return PGN.ENVIRONMENTAL_PARAMETERS;
     }
 
     public int sid() {
@@ -163,6 +152,15 @@ public class EnvironmentalParameters extends Message {
                 + temperature + " " + temperatureSource
                 + ", " + humidity + " " + humiditySource + ", "
                 + pressure + ")";
+    }
+
+    enum TemperatureSource {
+        SEA, OUTSIDE, INSIDE, ENGINE_ROOM, MAIN_CABIN, LIVE_WELL, BAIT_WELL, REFRIGERATION, HEATING,
+        DEW_POINT, APPARENT_WIND_CHILL, THEORETICAL_WIND_CHILL, HEAT_INDEX, FREEZER, EXHAUST
+    }
+
+    enum HumiditySource {
+        INSIDE, OUTSIDE
     }
 }
 

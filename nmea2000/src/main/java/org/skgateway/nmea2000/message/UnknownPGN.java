@@ -21,8 +21,9 @@ import org.skgateway.nmea2000.Message;
  *
  */
 public class UnknownPGN extends Message {
-    private int pgn;
+    private static final String hex = "0123456789ABCDEF";
     private final byte[] data;
+    private int pgn;
 
     public UnknownPGN(int pgn, int source, int destination, int priority, ByteBuffer data) {
         super(source, destination, priority);
@@ -40,11 +41,9 @@ public class UnknownPGN extends Message {
         return data.clone();
     }
 
-    private static final String hex = "0123456789ABCDEF";
-
     @Override
     public String toString() {
-        StringBuilder buffer = new StringBuilder(64+ data.length * 3);
+        StringBuilder buffer = new StringBuilder(64 + data.length * 3);
         buffer.append("UnknownPGN(")
                 .append(source())
                 .append(", ")

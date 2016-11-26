@@ -21,6 +21,7 @@ import javax.measure.quantity.Length;
 
 import org.skgateway.nmea2000.Measurements;
 import org.skgateway.nmea2000.Message;
+import org.skgateway.nmea2000.PGN;
 
 /**
  *
@@ -46,7 +47,7 @@ public class WaterDepth extends Message {
 
     @Override
     public int pgn() {
-        return 128267;
+        return PGN.WATER_DEPTH;
     }
 
     public int sid() {

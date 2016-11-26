@@ -41,6 +41,15 @@ public class Display extends Application {
     private final Text longitude = new Text();
     private DateTimeFormatter formatter;
 
+    static String formatDegrees(BigDecimal value, char positive, char negative) {
+        char suffix = value.compareTo(BigDecimal.ZERO) < 0 ? negative : positive;
+        value = value.abs();
+        BigDecimal[] split = value.divideAndRemainder(BigDecimal.ONE);
+        BigDecimal degrees = split[0];
+        BigDecimal minutes = split[1].multiply(new BigDecimal("60"));
+        return String.format("%3.0f\u00B0 %07.4f%c", degrees, minutes, suffix);
+    }
+
     @Override
     public void init() {
         formatter = DateTimeFormatter.ofPattern("kk:mm:ss").withZone(ZoneId.systemDefault());
@@ -91,15 +100,6 @@ public class Display extends Application {
     public void setPosition(BigDecimal latitude, BigDecimal longitude) {
         this.latitude.setText(formatDegrees(latitude, 'N', 'S'));
         this.longitude.setText(formatDegrees(longitude, 'E', 'W'));
-    }
-
-    static String formatDegrees(BigDecimal value, char positive, char negative) {
-        char suffix = value.compareTo(BigDecimal.ZERO) < 0 ? negative : positive;
-        value = value.abs();
-        BigDecimal[] split = value.divideAndRemainder(BigDecimal.ONE);
-        BigDecimal degrees = split[0];
-        BigDecimal minutes = split[1].multiply(new BigDecimal("60"));
-        return String.format("%3.0f\u00B0 %07.4f%c", degrees, minutes, suffix);
     }
 
     @Before

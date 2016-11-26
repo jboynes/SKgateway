@@ -13,6 +13,10 @@
  */
 package org.skgateway.nmea2000;
 
+import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.skgateway.nmea2000.message.CourseRapidUpdate;
 import org.skgateway.nmea2000.message.DistanceLog;
 import org.skgateway.nmea2000.message.EnvironmentalParameters;
@@ -27,33 +31,26 @@ import org.skgateway.nmea2000.message.VesselHeading;
 import org.skgateway.nmea2000.message.WaterDepth;
 import org.skgateway.nmea2000.message.WindData;
 
-import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  *
  */
 public class MessageFactory {
-    private interface Signature {
-        Message newInstance(int source, int destination, int priority, ByteBuffer data);
-    }
-
     private static final Map<Integer, Signature> FACTORIES;
+
     static {
         FACTORIES = new HashMap<>();
-        FACTORIES.put(60928, ISOAddressClaim::new);
-        FACTORIES.put(126992, SystemTime::new);
-        FACTORIES.put(127245, Rudder::new);
-        FACTORIES.put(127250, VesselHeading::new);
-        FACTORIES.put(128259, Speed::new);
-        FACTORIES.put(128267, WaterDepth::new);
-        FACTORIES.put(128275, DistanceLog::new);
-        FACTORIES.put(129025, PositionRapidUpdate::new);
-        FACTORIES.put(129026, CourseRapidUpdate::new);
-        FACTORIES.put(129033, TimeAndDate::new);
-        FACTORIES.put(130306, WindData::new);
-        FACTORIES.put(130311, EnvironmentalParameters::new);
+        FACTORIES.put(PGN.ISO_ADDRESS_CLAIM, ISOAddressClaim::new);
+        FACTORIES.put(PGN.SYSTEM_TIME, SystemTime::new);
+        FACTORIES.put(PGN.RUDDER, Rudder::new);
+        FACTORIES.put(PGN.VESSEL_HEADING, VesselHeading::new);
+        FACTORIES.put(PGN.SPEED, Speed::new);
+        FACTORIES.put(PGN.WATER_DEPTH, WaterDepth::new);
+        FACTORIES.put(PGN.DISTANCE_LOG, DistanceLog::new);
+        FACTORIES.put(PGN.POSITION_RAPID_UPDATE, PositionRapidUpdate::new);
+        FACTORIES.put(PGN.COURSE_RAPID_UPDATE, CourseRapidUpdate::new);
+        FACTORIES.put(PGN.TIME_AND_DATE, TimeAndDate::new);
+        FACTORIES.put(PGN.WIND_DATA, WindData::new);
+        FACTORIES.put(PGN.ENVIRONMENTAL_PARAMETERS, EnvironmentalParameters::new);
     }
 
     public static Message fromData(int pgn, int source, int destination, int priority, ByteBuffer data) {
@@ -63,5 +60,9 @@ public class MessageFactory {
         } else {
             return factory.newInstance(source, destination, priority, data);
         }
+    }
+
+    private interface Signature {
+        Message newInstance(int source, int destination, int priority, ByteBuffer data);
     }
 }

@@ -23,6 +23,7 @@ import javax.measure.quantity.Speed;
 import org.skgateway.nmea2000.HeadingReference;
 import org.skgateway.nmea2000.Measurements;
 import org.skgateway.nmea2000.Message;
+import org.skgateway.nmea2000.PGN;
 
 /**
  *
@@ -62,7 +63,7 @@ public class CourseRapidUpdate extends Message {
 
     @Override
     public int pgn() {
-        return 129026;
+        return PGN.COURSE_RAPID_UPDATE;
     }
 
     public HeadingReference reference() {

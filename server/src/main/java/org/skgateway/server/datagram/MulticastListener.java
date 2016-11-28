@@ -52,7 +52,7 @@ public class MulticastListener {
     public MulticastListener(InetAddress groupAddress, NetworkInterface networkInterface, Consumer<JsonObject> consumer, Executor executor) throws IOException {
         channel = DatagramChannel.open(StandardProtocolFamily.INET)
                 .setOption(StandardSocketOptions.SO_REUSEADDR, true)
-                .bind(new InetSocketAddress(3858));
+                .bind(new InetSocketAddress(8375));
         channel.join(groupAddress, networkInterface);
 
         new Thread(() -> {

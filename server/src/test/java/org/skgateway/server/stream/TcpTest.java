@@ -45,7 +45,7 @@ import org.skgateway.server.nmea2000.N2KEmulator;
 public class TcpTest {
     @Test
     public void runServer() throws Exception {
-        int port = 3858;
+        int port = 8375;
 
         TcpServer tcpServer = new TcpServer(new InetSocketAddress(port));
 

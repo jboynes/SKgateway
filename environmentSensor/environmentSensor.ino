@@ -4,8 +4,13 @@
 
 #include <Adafruit_BME280.h>
 
-const char ssid[] = "boynes2";
-const char pass[] = "thequickbrown";
+#define LOCAL_PORT 2000
+#define MULTICAST_PORT 8375
+#define MULTICAST_GROUP "225.4.5.6"
+
+const char ssid[] = "***";
+const char pass[] = "***";
+
 
 char id[32];
 unsigned long lastHello;
@@ -18,7 +23,9 @@ WiFiUDP Udp;
 
 Adafruit_BME280 bme;
 
-boolean led = false;
+float temp;
+int pressure;
+float humidity;
 
 void setup() {
   pinMode(LED_BUILTIN, OUTPUT);
@@ -30,72 +37,83 @@ void setup() {
   byte mac[6];
   WiFi.macAddress(mac);
   sprintf(id, "%02x%02x%02x", mac[0], mac[1], mac[2]);
-  
+
+  takeReading();
   sendHello();
 }
 
 void loop() {
   unsigned long start = millis();
   
-  digitalWrite(LED_BUILTIN, HIGH);
-  delay(200);
-  float temp = bme.readTemperature() + 273.15;
-  int pressure = bme.readPressure();
-  float humidity = bme.readHumidity();
-  digitalWrite(LED_BUILTIN, LOW);
-
+  takeReading();
   connect();
   if (start - lastHello > 10000) {
     sendHello();
+  } else {
+    sendData();
   }
 
-  sprintf(buffer, "{\"devices\":{\"acme-BME280-%s\":{\"data\":{"
-      "\"temperature\":%d.%02d,"
-      "\"pressure\":%d,"
-      "\"humidity\":%d.%02d"
-      "}}}}",
-    id, (int) temp, (int)(temp*100)%100, pressure, (int) humidity, (int)(humidity*100)%100);
-  send(buffer);
-  
   delay(2000);
+}
+
+void takeReading() {
+  digitalWrite(LED_BUILTIN, HIGH);
+  temp = bme.readTemperature() + 273.15;
+  pressure = bme.readPressure();
+  humidity = bme.readHumidity();
+  digitalWrite(LED_BUILTIN, LOW);
 }
 
 void sendHello() {
 /*
 {
   "devices": {
-    "acme-BME280-123456": {
-      "manufacturerName": "acme",
-      "productName": "BME280",
-      "serialNumber": "123456"
-    },
-    "data": {
-      "$schema": "http://devices.acme.example/signalk/bme280.json"
+    "acme-bme280-f1df70": {
+      "_type": "http://devices.acme.example/signalk/bme280.json#/metadata",
+      "serialNumber": "f1df70",
+      "lastReading": {
+        "_timestamp": "2016-11-26T21:23:28.454Z",
+        "temperature": 293.15,
+        "pressure": 99845,
+        "humidity": 45.65
+      }
     }
   }
 }
 */  
   sprintf(buffer, 
-  "{\"devices\":{\"acme-BME280-%s\":{"
-    "\"manufacturerName\":\"acme\","
-    "\"productName\":\"BME280\","
+  "{\"devices\":{\"acme-bme280-%s\":{"
+    "\"_type\":\"http://devices.acme.example/signalk/bme280.json#/metadata\","
     "\"serialNumber\":\"%s\","
-    "\"data\":{\"$schema\":\"http://devices.acme.example/signalk/bme280.json\"}"
-  "}}}", id, id);
+    "\"lastReading\":{"
+      "\"temperature\":%d.%02d,"
+      "\"pressure\":%d,"
+      "\"humidity\":%d.%02d"
+  "}}}}", id, id, (int) temp, (int)(temp*100)%100, pressure, (int) humidity, (int)(humidity*100)%100);
   send(buffer);
   lastHello = millis();
+}
+
+void sendData() {
+    sprintf(buffer, "{\"devices\":{\"acme-bme280-%s\":{\"lastReading\":{"
+      "\"temperature\":%d.%02d,"
+      "\"pressure\":%d,"
+      "\"humidity\":%d.%02d"
+      "}}}}",
+    id, (int) temp, (int)(temp*100)%100, pressure, (int) humidity, (int)(humidity*100)%100);
+  send(buffer);
 }
 
 void connect() {
   if (status != WL_CONNECTED) {
     status = WiFi.begin(ssid, pass);
-    Udp.begin(2000);
+    Udp.begin(LOCAL_PORT);
   }
 }
 
 void send(char* buffer) {
   if (status == WL_CONNECTED) {
-    Udp.beginPacket("225.4.5.6", 3858);
+    Udp.beginPacket(MULTICAST_GROUP, MULTICAST_PORT);
     Udp.write(buffer);
     Udp.flush();
     Udp.endPacket();

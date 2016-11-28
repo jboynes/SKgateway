@@ -59,7 +59,7 @@ public class MulticastTest {
         MulticastListener server = new MulticastListener(address, en1, json -> System.out.println("Multicast: " + json), Executors.newSingleThreadExecutor());
 
         // Emulate a device sending to the multicast channel
-        InetSocketAddress remote = new InetSocketAddress(address, 3858);
+        InetSocketAddress remote = new InetSocketAddress(address, 8375);
         DatagramChannel channel = DatagramChannel.open();
         new N2KEmulator(Paths.get("withAIS.asc"), json -> {
             try {

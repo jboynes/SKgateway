@@ -1,0 +1,18 @@
+{
+  "vessels": {
+    "2309999": {
+      "manifest": {
+        "devices": {
+          "SKGateway-xxxxxxxx": {
+          },
+          "acme-bme280-0ffbf1": {
+            "metadata": {
+              "$ref": "http://devices.acme.example/signalk/bme280.json"
+            }
+          }
+        }
+      }
+    },
+    "self": "2309999"
+  }
+}

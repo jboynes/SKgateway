@@ -41,7 +41,7 @@ import org.skgateway.gateways.actisense.SerialParser;
 /**
  *
  */
-public class N2KEmulator extends Thread {
+public class N2KEmulator implements Runnable {
     private final Path rawData;
     private final MessageParser parser;
 

@@ -25,7 +25,35 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.skgateway.server.stream;
+
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+
+/*
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+package org.skgateway.server;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
@@ -37,6 +65,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 import org.skgateway.server.nmea2000.N2KEmulator;
+import org.skgateway.transport.stream.TcpClient;
+import org.skgateway.transport.stream.TcpServer;
 
 /**
  *
@@ -50,7 +80,7 @@ public class TcpTest {
         TcpServer tcpServer = new TcpServer(new InetSocketAddress(port));
 
         // Emulate an N2K source
-        new N2KEmulator(Paths.get("withAIS.asc"), tcpServer::sendToAll).start();
+        new Thread(new N2KEmulator(Paths.get("withAIS.asc"), tcpServer::sendToAll)).start();
 
         // Have a simple client connect
         new TcpClient(new InetSocketAddress(InetAddress.getLoopbackAddress(), port), System.out::println, Executors.newSingleThreadExecutor());

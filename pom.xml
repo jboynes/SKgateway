@@ -40,6 +40,8 @@
     <module>gateways</module>
     <module>services</module>
     <module>server</module>
+    <module>display</module>
+    <module>transport</module>
   </modules>
 
   <build>
@@ -74,4 +76,14 @@
       </plugin>
     </plugins>
   </build>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>4.12</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 </project>

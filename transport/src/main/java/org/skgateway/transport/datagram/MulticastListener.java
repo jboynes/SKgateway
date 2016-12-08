@@ -25,52 +25,50 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.skgateway.server.datagram;
+package org.skgateway.transport.datagram;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
+import java.net.StandardProtocolFamily;
+import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
-import java.nio.file.Paths;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Executors;
+import java.util.concurrent.Executor;
+import java.util.function.Consumer;
 
-import org.junit.Ignore;
-import org.junit.Test;
+import javax.json.JsonObject;
 
-import org.skgateway.server.JsonSupport;
-import org.skgateway.server.nmea2000.N2KEmulator;
+import org.skgateway.transport.JsonSupport;
 
 /**
  *
  */
-@Ignore
-public class MulticastTest {
+public class MulticastListener {
 
-    @Test
-    public void sendSomething() throws Exception {
+    private final DatagramChannel channel;
 
-        InetAddress address = InetAddress.getByName("225.4.5.6");
-        NetworkInterface en1 = NetworkInterface.getByName("en1");
+    public MulticastListener(InetAddress groupAddress, NetworkInterface networkInterface, Consumer<JsonObject> consumer, Executor executor) throws IOException {
+        channel = DatagramChannel.open(StandardProtocolFamily.INET)
+                .setOption(StandardSocketOptions.SO_REUSEADDR, true)
+                .bind(new InetSocketAddress(8375));
+        channel.join(groupAddress, networkInterface);
 
-        // Emulate server with an N2K source
-        MulticastListener server = new MulticastListener(address, en1, json -> System.out.println("Multicast: " + json), Executors.newSingleThreadExecutor());
-
-        // Emulate a device sending to the multicast channel
-        InetSocketAddress remote = new InetSocketAddress(address, 8375);
-        DatagramChannel channel = DatagramChannel.open();
-        new N2KEmulator(Paths.get("withAIS.asc"), json -> {
-            try {
-                ByteBuffer buffer = JsonSupport.marshal(json);
-                channel.send(buffer, remote);
-            } catch (IOException e) {
-                e.printStackTrace();
+        new Thread(() -> {
+            ByteBuffer buffer = ByteBuffer.allocate(4096);
+            while (true) {
+                try {
+                    buffer.clear();
+                    channel.receive(buffer);
+                    buffer.flip();
+                    JsonObject json = JsonSupport.unmarshal(buffer);
+                    executor.execute(() -> consumer.accept(json));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return;
+                }
             }
         }).start();
-
-        CountDownLatch latch = new CountDownLatch(1);
-        latch.await();
     }
 }

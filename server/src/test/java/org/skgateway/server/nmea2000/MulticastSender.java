@@ -25,50 +25,39 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.skgateway.server.datagram;
+package org.skgateway.server.nmea2000;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
-import java.net.StandardProtocolFamily;
-import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
-import java.util.concurrent.Executor;
-import java.util.function.Consumer;
+import java.nio.file.Paths;
 
-import javax.json.JsonObject;
-
-import org.skgateway.server.JsonSupport;
+import org.skgateway.transport.JsonSupport;
 
 /**
  *
  */
-public class MulticastListener {
+public class MulticastSender {
 
-    private final DatagramChannel channel;
+    public static void main(String[] args) throws Exception {
 
-    public MulticastListener(InetAddress groupAddress, NetworkInterface networkInterface, Consumer<JsonObject> consumer, Executor executor) throws IOException {
-        channel = DatagramChannel.open(StandardProtocolFamily.INET)
-                .setOption(StandardSocketOptions.SO_REUSEADDR, true)
-                .bind(new InetSocketAddress(8375));
-        channel.join(groupAddress, networkInterface);
+        InetAddress address = InetAddress.getByName("225.4.5.6");
+        NetworkInterface en1 = NetworkInterface.getByName("en1");
 
-        new Thread(() -> {
-            ByteBuffer buffer = ByteBuffer.allocate(4096);
-            while (true) {
-                try {
-                    buffer.clear();
-                    channel.receive(buffer);
-                    buffer.flip();
-                    JsonObject json = JsonSupport.unmarshal(buffer);
-                    executor.execute(() -> consumer.accept(json));
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    return;
-                }
+        // Emulate a device sending to the multicast channel
+        InetSocketAddress remote = new InetSocketAddress(address, 8375);
+        DatagramChannel channel = DatagramChannel.open();
+        new N2KEmulator(Paths.get("withAIS.asc"), json -> {
+            try {
+                System.out.println(json);
+                ByteBuffer buffer = JsonSupport.marshal(json);
+                channel.send(buffer, remote);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        }).start();
+        }).run();
     }
 }

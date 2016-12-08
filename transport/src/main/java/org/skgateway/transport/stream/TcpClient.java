@@ -25,57 +25,53 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.skgateway.server.stream;
+package org.skgateway.transport.stream;
 
 import java.io.Closeable;
-import java.io.FilterInputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.net.InetSocketAddress;
 import java.nio.channels.AsynchronousSocketChannel;
-import java.nio.channels.Channels;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 
-import javax.json.Json;
 import javax.json.JsonObject;
 
 /**
  *
  */
-public class JsonReceiver implements Closeable {
-    private final Executor executor;
-    private final Consumer<JsonObject> consumer;
-    private final InputStream is;
+public class TcpClient implements Closeable {
+    private final JsonSender sender;
+    private final JsonReceiver receiver;
 
-    public JsonReceiver(AsynchronousSocketChannel channel, Consumer<JsonObject> consumer, Executor executor) {
-        this.consumer = consumer;
-        this.executor = executor;
-
-        is = new FilterInputStream(Channels.newInputStream(channel)) {
-            @Override
-            public void close() {
-                // Don't let JsonReader close the underlying channel
-            }
-        };
-
-        Thread reader = new Thread(this::run);
-        reader.start();
-    }
-
-    private void run() {
-        while (true) {
-            try {
-                JsonObject json = Json.createReader(is).readObject();
-                executor.execute(() -> consumer.accept(json));
-            } catch (Exception e) {
-                e.printStackTrace();
-                return;
+    public TcpClient(InetSocketAddress address, Consumer<JsonObject> consumer, Executor executor) throws IOException {
+        AsynchronousSocketChannel channel = AsynchronousSocketChannel.open();
+        try {
+            channel.connect(address).get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            Throwable cause = e.getCause();
+            if (cause instanceof IOException) {
+                throw (IOException) cause;
+            } else if (cause instanceof RuntimeException) {
+                throw (RuntimeException) cause;
+            } else if (cause instanceof Error) {
+                throw (Error) cause;
+            } else {
+                throw new IOException("Error connecting", cause);
             }
         }
+        sender = new JsonSender(channel);
+        receiver = new JsonReceiver(channel, consumer, executor);
+    }
+
+    public void send(JsonObject json) {
+        sender.send(json);
     }
 
     @Override
     public void close() throws IOException {
-        is.close();
+        receiver.close();
     }
 }

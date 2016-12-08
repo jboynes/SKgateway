@@ -25,53 +25,57 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.skgateway.server.stream;
+package org.skgateway.transport.stream;
 
 import java.io.Closeable;
+import java.io.FilterInputStream;
 import java.io.IOException;
-import java.net.InetSocketAddress;
+import java.io.InputStream;
 import java.nio.channels.AsynchronousSocketChannel;
-import java.util.concurrent.ExecutionException;
+import java.nio.channels.Channels;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
 
+import javax.json.Json;
 import javax.json.JsonObject;
 
 /**
  *
  */
-public class TcpClient implements Closeable {
-    private final JsonSender sender;
-    private final JsonReceiver receiver;
+public class JsonReceiver implements Closeable {
+    private final Executor executor;
+    private final Consumer<JsonObject> consumer;
+    private final InputStream is;
 
-    public TcpClient(InetSocketAddress address, Consumer<JsonObject> consumer, Executor executor) throws IOException {
-        AsynchronousSocketChannel channel = AsynchronousSocketChannel.open();
-        try {
-            channel.connect(address).get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            Throwable cause = e.getCause();
-            if (cause instanceof IOException) {
-                throw (IOException) cause;
-            } else if (cause instanceof RuntimeException) {
-                throw (RuntimeException) cause;
-            } else if (cause instanceof Error) {
-                throw (Error) cause;
-            } else {
-                throw new IOException("Error connecting", cause);
+    public JsonReceiver(AsynchronousSocketChannel channel, Consumer<JsonObject> consumer, Executor executor) {
+        this.consumer = consumer;
+        this.executor = executor;
+
+        is = new FilterInputStream(Channels.newInputStream(channel)) {
+            @Override
+            public void close() {
+                // Don't let JsonReader close the underlying channel
             }
-        }
-        sender = new JsonSender(channel);
-        receiver = new JsonReceiver(channel, consumer, executor);
+        };
+
+        Thread reader = new Thread(this::run);
+        reader.start();
     }
 
-    public void send(JsonObject json) {
-        sender.send(json);
+    private void run() {
+        while (true) {
+            try {
+                JsonObject json = Json.createReader(is).readObject();
+                executor.execute(() -> consumer.accept(json));
+            } catch (Exception e) {
+                e.printStackTrace();
+                return;
+            }
+        }
     }
 
     @Override
     public void close() throws IOException {
-        receiver.close();
+        is.close();
     }
 }

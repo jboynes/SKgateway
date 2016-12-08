@@ -25,13 +25,12 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 
 import javax.json.JsonObject;
-import javax.json.JsonValue;
 
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import org.skgateway.server.datagram.MulticastListener;
+import org.skgateway.transport.datagram.MulticastListener;
 
 /**
  *

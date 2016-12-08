@@ -117,12 +117,17 @@ public class Display extends Application {
     }
 
     public void setTime(Instant instant) {
-        time.setText(formatter.format(instant));
+        String text = formatter.format(instant);
+        System.out.println("time = " + text);
+        time.setText(text);
     }
 
     public void setPosition(BigDecimal latitude, BigDecimal longitude) {
-        this.latitude.setText(formatDegrees(latitude, 'N', 'S'));
-        this.longitude.setText(formatDegrees(longitude, 'E', 'W'));
+        String lat = formatDegrees(latitude, 'N', 'S');
+        String lon = formatDegrees(longitude, 'E', 'W');
+        System.out.println("lat = " + lat + ", lon = " + lon);
+        this.latitude.setText(lat);
+        this.longitude.setText(lon);
     }
 
     private static String formatDegrees(BigDecimal value, char positive, char negative) {

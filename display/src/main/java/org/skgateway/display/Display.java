@@ -56,11 +56,11 @@ import java.util.function.Consumer;
 import javax.json.JsonObject;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import org.skgateway.transport.datagram.MulticastListener;
 
@@ -68,9 +68,9 @@ import org.skgateway.transport.datagram.MulticastListener;
  *
  */
 public class Display extends Application {
-    private final Text time = new Text();
-    private final Text latitude = new Text();
-    private final Text longitude = new Text();
+    private final Label time = new Label();
+    private final Label latitude = new Label();
+    private final Label longitude = new Label();
     private DateTimeFormatter formatter;
     private MulticastListener listener;
     private final Dispatcher dispatcher;
@@ -84,11 +84,16 @@ public class Display extends Application {
     @Override
     public void init() {
         formatter = DateTimeFormatter.ofPattern("kk:mm:ss").withZone(ZoneId.systemDefault());
+/*
+        time.setFill(Color.WHITE);
+        latitude.setFill(Color.WHITE);
+        longitude.setFill(Color.WHITE);
+*/
 
         try {
             InetAddress address = InetAddress.getByName("225.4.5.6");
             NetworkInterface en1 = NetworkInterface.getByName("en1");
-            listener = new MulticastListener(address, en1, dispatcher, Executors.newSingleThreadExecutor());
+            listener = new MulticastListener(address, en1, json -> Platform.runLater(() -> dispatcher.accept(json)), Executors.newSingleThreadExecutor());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -101,6 +106,7 @@ public class Display extends Application {
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(5, 5, 5, 5));
+//        grid.setStyle("-fx-background-color: black");
 
         grid.add(new Label("Time:"), 0, 0);
         grid.add(time, 1, 0);
@@ -110,10 +116,10 @@ public class Display extends Application {
         grid.add(longitude, 1, 2);
 
         Scene scene = new Scene(grid, 300, 275);
+        scene.getStylesheets().add("/display.css");
+
         primaryStage.setScene(scene);
         primaryStage.show();
-
-        setTime(Instant.now());
     }
 
     public void setTime(Instant instant) {
@@ -140,8 +146,7 @@ public class Display extends Application {
     }
 
     public static void main(String[] args) {
-
-        Application.launch(Display.class);
+        launch(Display.class, args);
     }
 
     private static class Dispatcher implements Consumer<JsonObject> {

@@ -49,9 +49,6 @@ public class N2KEmulator implements Runnable {
         this.rawData = rawData;
 
         parser = new MessageParser(message -> {
-            if (message.source() != 160) {
-                return;
-            }
             JsonObject json = PgnMapper.map(message);
             if (json != null) {
                 consumer.accept(json);

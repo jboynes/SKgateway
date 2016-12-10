@@ -84,11 +84,6 @@ public class Display extends Application {
     @Override
     public void init() {
         formatter = DateTimeFormatter.ofPattern("kk:mm:ss").withZone(ZoneId.systemDefault());
-/*
-        time.setFill(Color.WHITE);
-        latitude.setFill(Color.WHITE);
-        longitude.setFill(Color.WHITE);
-*/
 
         try {
             InetAddress address = InetAddress.getByName("225.4.5.6");
@@ -106,7 +101,6 @@ public class Display extends Application {
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(5, 5, 5, 5));
-//        grid.setStyle("-fx-background-color: black");
 
         grid.add(new Label("Time:"), 0, 0);
         grid.add(time, 1, 0);
@@ -119,6 +113,7 @@ public class Display extends Application {
         scene.getStylesheets().add("/display.css");
 
         primaryStage.setScene(scene);
+        primaryStage.setOnCloseRequest(e -> { Platform.exit(); System.exit(0); });
         primaryStage.show();
     }
 

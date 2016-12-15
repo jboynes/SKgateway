@@ -1,0 +1,21 @@
+{
+  "context": "vessels.urn:mrn:signalk:uuid:c0d79334-4e25-4245-8892-54e8ccc8021d",
+  "updates": [
+    {
+      "source": {
+        "type": "NMEA0183",
+        "sentence": "HDT",
+        "label": "nmeaFromFile",
+        "talker": "II"
+      },
+      "timestamp": "2016-12-15T03:20:35.000Z",
+      "values": [
+        {
+          "path": "navigation.headingTrue",
+          "value": 0
+        }
+      ]
+    }
+  ]
+}
+

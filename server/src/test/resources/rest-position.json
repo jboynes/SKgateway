@@ -1,0 +1,7 @@
+{
+  "longitude": 23.53145,
+  "latitude": 60.0782,
+  "$source": "nmeaFromFile.GP",
+  "timestamp": "2016-12-15T10:00:37.000Z",
+  "sentence": "GLL"
+}

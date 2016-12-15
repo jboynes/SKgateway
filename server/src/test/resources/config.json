@@ -1,0 +1,16 @@
+{
+  "vessels": {
+    "234567890": {
+      "manifest": {
+        "devices": {
+          "SKGateway-xxxxxxxx": {
+          }
+          "acme-LOG-12345": {
+
+          }
+        }
+      }
+    },
+    "self": "234567890"
+  }
+}

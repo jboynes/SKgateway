@@ -1,0 +1,23 @@
+{
+  "updates": [
+    {
+      "source": {
+        "type": "NMEA0183",
+        "sentence": "GLL",
+        "label": "nmeaFromFile",
+        "talker": "GP"
+      },
+      "timestamp": "2016-12-15T09:56:07.000Z",
+      "values": [
+        {
+          "path": "navigation.position",
+          "value": {
+            "longitude": 23.538766666666668,
+            "latitude": 60.08436666666667
+          }
+        }
+      ]
+    }
+  ],
+  "context": "vessels.urn:mrn:signalk:uuid:c0d79334-4e25-4245-8892-54e8ccc8021d"
+}

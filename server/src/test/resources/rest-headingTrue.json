@@ -1,0 +1,6 @@
+{
+  "value": 0,
+  "$source": "nmeaFromFile.II",
+  "timestamp": "2016-12-15T03:29:32.000Z",
+  "sentence": "HDT"
+}

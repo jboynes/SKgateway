@@ -20,11 +20,13 @@ import java.util.concurrent.CountDownLatch;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
  *
  */
+@Ignore
 public class HttpServerTest {
 
     HttpServer server;

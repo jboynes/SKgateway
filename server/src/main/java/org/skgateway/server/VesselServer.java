@@ -58,7 +58,7 @@ public class VesselServer {
         delta.getJsonArray("updates").forEach(json -> {
             JsonObject update = (JsonObject) json;
             String path = update.getString("path");
-            JsonObject value = update.getJsonObject()
+            JsonObject value = update.getJsonObject("value");
         });
     }
 }

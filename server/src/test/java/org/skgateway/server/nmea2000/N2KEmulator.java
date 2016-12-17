@@ -44,12 +44,12 @@ import org.skgateway.gateways.actisense.SerialParser;
 public class N2KEmulator implements Runnable {
     private final Path rawData;
     private final MessageParser parser;
+    private final PgnMapper pgnMapper = new PgnMapper("vessels.self");
 
     public N2KEmulator(Path rawData, Consumer<JsonObject> consumer) {
         this.rawData = rawData;
-
         parser = new MessageParser(message -> {
-            JsonObject json = PgnMapper.map(message);
+            JsonObject json = pgnMapper.map(message);
             if (json != null) {
                 consumer.accept(json);
             }

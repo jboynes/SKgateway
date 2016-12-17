@@ -94,7 +94,7 @@ public class WindData extends Message {
         return "WindData(" + speed + ", " + angle + ", " + reference + ")";
     }
 
-    enum Reference {
+    public enum Reference {
         TRUE, MAGNETIC, APPARENT, TRUE_TO_BOAT, TRUE_TO_WATER
     }
 }

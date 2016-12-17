@@ -48,6 +48,9 @@ public class MessageParser implements Consumer<ByteBuffer> {
         }
 
         buffer.rewind();
+        if (buffer.remaining() < 2) {
+            return;
+        }
         byte type = buffer.get();
         int length = buffer.get() & 0xff;
         switch (type) {

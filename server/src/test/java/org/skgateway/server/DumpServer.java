@@ -5,6 +5,9 @@ import org.skgateway.server.nmea2000.PgnMapper;
 
 import javax.json.JsonObject;
 
+/**
+ * Dumps N2K Data.
+ */
 public class DumpServer {
     public static void main(String[] args) throws Exception {
         PgnMapper pgnMapper = new PgnMapper("vessels.self");

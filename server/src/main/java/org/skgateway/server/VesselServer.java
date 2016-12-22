@@ -27,8 +27,9 @@
  */
 package org.skgateway.server;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.json.JsonObject;
 
@@ -36,29 +37,52 @@ import javax.json.JsonObject;
  *
  */
 public class VesselServer {
-    private String vesselId;
-    private JsonObject self;
-    private Map<String, JsonObject> devices = new HashMap<>();
+
+    private Vessel self;
+    private final Map<String, Vessel> vessels = new ConcurrentHashMap<>();
 
     public VesselServer(JsonObject root) {
         JsonObject vessels = root.getJsonObject("vessels");
-        vesselId = vessels.getString("self");
-        self = vessels.getJsonObject(vesselId);
+        String vesselId = vessels.getString("self");
+        self = new Vessel(vesselId, vessels.getJsonObject(vesselId));
+        this.vessels.put(vesselId, self);
+    }
 
-        JsonObject manifest = self.getJsonObject("manifest");
-        JsonObject devices = manifest.getJsonObject("devices");
-        devices.forEach((key, value) -> this.devices.put(key, (JsonObject) value));
+    /**
+     * Returns the id for this vessel.
+     *
+     * @return the id for this vessel
+     */
+    public String getVesselId() {
+        return self.getVesselId();
+    }
+
+    public Vessel self() {
+        return self;
+    }
+
+    public Optional<Vessel> vessel(String vesselId) {
+        return Optional.ofNullable(vessels.get(vesselId));
     }
 
     /**
      * Process a current delta object.
+     *
      * @param delta a delta object
      */
     public void onDelta(JsonObject delta) {
         delta.getJsonArray("updates").forEach(json -> {
             JsonObject update = (JsonObject) json;
-            String path = update.getString("path");
-            JsonObject value = update.getJsonObject("value");
+            update.getJsonArray("values").forEach(json2 -> {
+                JsonObject pathValue = (JsonObject) json2;
+                String path = pathValue.getString("path");
+                JsonObject value = pathValue.getJsonObject("value");
+                if (value == null) {
+                    self.removeValue(path);
+                } else {
+                    self.updateValue(path, value);
+                }
+            });
         });
     }
 }
